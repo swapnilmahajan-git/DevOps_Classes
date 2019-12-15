@@ -1,0 +1,535 @@
+	
+	Docker - The Container Virtualization Tool
+	==========================================
+
+========
+Phase-1:
+========
+#
+Diff bet'n Physical server, Virtual server and Docker container.
+
+VM, Docker, usage in realtime
+
+#
+what is docker? why docker? who can use it?
+
+#
+Supported Platforms-
+	- Docker is supported on
+		- Linux platforms
+			Ubuntu, RHEL, CentOs..etc.
+		- Windows  
+		- OS X 		
+		  
+	- Cloud Platforms
+		Amazon EC2
+		Google compute Engine..etc.
+		Azure
+
+Requirements:
+	- 64-bit architecture	  
+	- Linux 3.8 or later Kernel versions
+#
+Requirements Check:
+- Check Kernel version
+	$ uname -a Or -r
+
+NOTE: Kernel can also be upgraded.
+
+- Check OS name:
+	$ lsb_release -a / -cs
+	$ cat /etc/os-release	
+
+
+Installation Steps:
+===========	==========	
+# Update apt-get cache
+	$ sudo apt-get update
+
+# Install docker dependencies
+	$ sudo apt-get install apt-transport-https ca-certificates curl software-properties-common
+
+# Add GPG key to apt repository
+	$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+
+# Setup Stable repository:
+	$ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+	
+# Update apt package index:
+	$ sudo apt-get update
+	
+# Install Latest version of Docker
+	$ sudo apt-get install docker-ce
+
+#
+Installation Check
+sudo docker --version
+
+#
+uninstall docker:
+$ sudo apt-get remove docker-ce
+
+
+=======
+Phase-2
+=======
+#
+Managing docker containers
+===============================
+#
+docker run command:
+- "docker run" command provides all lanuching capabilities for docker to create a container.
+-  we use `docker run` to create new containers.
+
+
+# Creating first container
+
+sudo docker run -i -t or -it ubuntu /bin/bash
+
+	-i : opens STDIN from the container
+	-t : tells docker to assign a pseudo-tty to the
+		 container.
+	-it : provides interactive shell or terminal(it).
+	
+	`ubuntu`: is an image and also called as "stock image" or "base image".
+			  This will be downloaded by default from 'Docker hub' for the first
+			  time.
+	
+	/bin/bash: which shell need to be installed in the terminal 
+
+
+
+# Inspect the new container
+1.
+	# hostname -i 
+        # cd /  
+        # ls 
+   	# ps -ef 
+ 
+2.      #cat /etc/hosts 
+
+        
+3.      suppose if we want to change hostname of machine newly or any then do the following steps: 
+	# vim /etc/hosts
+	THEN
+	# vim /etc/hostname 
+
+4.	# ifconfig 
+ 
+	# apt-get update
+	# apt-get install net-tools
+	THEN
+
+5.	# ifconfig
+		observe etho and lo network interfaces with 
+		ip address
+
+6.	# ps -ef
+
+
+#Check which shell we are using within container 
+-  echo $SHELL
+
+#What is SHELL? 
+
+#
+Shotdown a container
+"exit" to stop the container
+
+# List all containers(stopped and running)
+	$ sudo docker ps -a
+
+# List running containers only
+	$ docker ps
+
+# ps command output shows
+	- Image name from which container is created
+	- ID - container can be identified using short UUID, longer UUID Or name.
+	- Status of the container (Up / Exited)
+	- Name
+
+
+# See longer UUID of the container 
+	$ docker ps -a --no-trunc -q
+
+# show the last container which you have created(stopped/running)
+	$ sudo docker ps -l
+
+# Naming the container
+	$ docker run --name container -it ubuntu /bin/bash
+
+# How to create multiple container in one command (creating container in background mode)
+        $ docker run -it -d --name <container-name> ubuntu /bin/bash
+
+# Rename a container (rename exist container)
+	$ docker rename db-server3 db-server-name3
+
+# Deleting a container 
+	$ docker rm ID/name 
+
+#Deleting a container forcefully 
+	$ docker rm -f ID/name 
+
+# Delete all containers at once.
+ 	$ docker rm `docker ps -a -q`
+
+#Showing docker container ids only
+	$ docker ps -a -q
+
+#docker info
+
+# Starting a stopped container
+	$ sudo docker start container1
+	$ sudo docker stop aa3f365f0fdocker4e
+	$ sudo docker restart container1
+
+
+# Attaching to a running container (login to container)
+	$ docker attach container1 
+	$ docker attach b1b1c8dc1939 
+	
+
+# List Stopped containers only
+	$ docker ps -a -f status=exited
+	   Where Status can be exited / running
+
+========================================================================
+
+Que.) How many no of containers lastly created?
+
+=>Setup SSH for the container
+	ssh username@<Container-ip>
+
+- Install ssh server
+$ apt-get update
+$ apt-get install openssh-server
+
+- Start the server
+$ service ssh start (status/stop)
+
+- Create an user and set up password
+$ useradd -m -d /home/username -s /bin/bash password
+$ passwd password
+	
+- Connect to the container using ssh
+$ ssh username@<Container-ip>
+
+=========================================================================
+
+# Show last 4 containers (stopped/running)
+	- docker ps -n4
+
+# Pause containers
+	- $ docker pause <container-name or ids>
+
+# Un-pause containers
+	- $ docker unpause <container-name or ids>
+
+# Find More About The Container
+- docker inspect comamnd "interrogates" the container and returns the info like.. configuration info, names, commands, n/w configurations, stopped/running ..etc.
+	---------        -------------                                            ------------------  -----  --------  ------------------  ---------------	 
+	 Examples:
+	$ docker inspect <container-name or ids> 
+
+	$ sudo docker inspect <container-name or ids> | grep IPAddress | tail -1 
+		
+	$ sudo docker inspect <container-name or ids> -f '{{.NetworkSettings.Networks.bridge.IPAddress}}'
+		
+	$ sudo docker inspect --format '{{.Config.Hostname}}' <container-name>
+
+	$ sudo docker inspect -f '{{.Name}}' `sudo docker ps -a -q`
+
+- Remove all running containers
+	$ docker rm -f `docker ps -q`
+
+=========================================================================================================
+
+# Docker Images
+=================
+Agenda:
+	- Understand docker Image
+	- Create docker Image
+	- Store docker Image
+	- Share your own Image
+	- Examine repositories that hold images
+
+- Docker images are the building blocks for creating container.
+- From images, we launch containers.
+	
+# Listing docker images
+
+	$ sudo docker images
+		or
+	$ sudo docker image ls
+
+	$ sudo docker images -q 
+
+	$ sudo docker rmi `sudo docker images -q`
+
+
+# Images are stored in First directory and Containers are stored in Second directory. 
+  ------               --------------      ----------
+1.) Images live in -  '/var/lib/docker/image/overlay2/imagedb/content/sha256' --> This path is applicable on ubuntu OS only 
+                   -  '/var/lib/docker/overlay2/iamgedb/content/sha256' --> This path is applicable on centos7 OS only
+2.) Containers live in /var/lib/docker/containers
+
+============================================================================================================
+
+# SETTING-UP NGINX SERVER ON UBUNTU MANUALLY:
+  ------------------------------------------
+ 
+ $ sudo apt-get update
+ $ sudo apt-get install -y nginx
+
+# start/stop/restart nginx server:
+  =========== 			
+ 	$ sudo service nginx start
+ 		       nginx stop 
+		       nginx restart
+		       nginx status
+
+# Deployment Path of the nginx server
+	 Web content/Deployment path: $ cd /var/www/html
+
+===========================================================================
+
+# Building our own Image
+	We have 2 Ways to create docker image:
+		1. docker "commit" (depricited)
+		2. docker "build" cmd & Dockerfile
+
+
+# 1.) First Approach 
+====================  (This approach is depricitd)
+Problem:- Creating docker image using "docker commit" command
+
+	Ship an application with ubuntu, nginx web server and code to your customer.
+
+
+	- create container
+		$ sudo docker run --name <image-container-name> -it ubuntu /bin/bash
+	
+	- Install nginx manually
+		# sudo apt-get install -y nginx
+	
+	- create a docker image from the container OR convert docker container as docker image
+		$ docker commit nginx-container "dockerhub-username/nginx-image"
+	
+	- check if image has been created
+	  $ docker images
+
+	- push the newly created image to docker hub
+		$ docker login
+		$ docker push dockerhub-username/nginx-image
+
+	- Customers can spin(create) millions of new containers using below command. means we can create new container with image.
+		$ docker run -it dockerhub-username/nginx-img /bin/bash
+
+
+#2.) Second Approach
+=====================
+# Problem:- Creating docker image using "docker build" command
+			                -----------
+    
+     Step 1. Create One Project Directory within directory create one folder for create Dockerfile.
+	
+	- $ mkdir project  
+	- $ mkdir nginx 
+	- $ cd project/nginx
+
+	index.html:
+	=======
+	- $ vim index.html
+
+		<html>
+		   <body style="background-color:powderblue;">
+		     <h1 style="color:red;"> Online Training Portal for Devops </h1>
+		   </body> 
+	       </html>
+
+	Now, create Dockerfile using below steps
+	
+	- $ vim Dockerfile
+
+	- Write within Dokckerfile below steps:
+
+		FROM ubuntu:16.04   	-(It is always start FROM first line of Dockerfile for creating container)
+		MAINTAINER "abc@gmail.com" (we add this line for identifing who created this image)
+		RUN apt-get update  	-(we can write multiple command what we want to configure in our container server)
+		RUN apt-get install -y nginx
+		COPY index.html /var/www/html   -(copy the code or war or any file we want to deploy on nginx server)
+		ENTRYPOINT service nginx start && bash  -(This line start the services like ssh, server, or any thing)
+ 
+#Difference between RUN and ENTRYPOINT
+
+# Building docker image:
+	$ cd nginx
+	$ docker build -t "username_of_dockerhub/image-name" .
+	
+# If the Dockerfile name is different then use -f myDockerfile before -t. Ex. see below command 
+
+	$ docker build -f myDockerfile -t "username_of_dockerhub/image-name" . 
+
+
+# Listing docker image
+	$ docker images
+
+# Creating docker hub account
+- Docker Hub (https://hub.docker.com/)
+	- Each Repository can contain multiple images
+	- Images are Identified using tags.
+
+
+# Now we are Pushing custom images to docker_hub repository
+	$ docker login
+	$ docker push username_of_dockerhub/image-name
+
+#
+Testing Image
+-> First Delete your created image from directory and after use below command 
+
+# Deleting an Image
+	- docker rmi username_of_dockerhub/image-name 
+
+# Deleting all Images
+	- docker rmi `docker images -q`
+
+# Creating a new container from our image
+	$ docker run -it --name <give_name_to_container> username_of_dockerhub/image-name /bin/bash
+
+# Check IPaddress and everything what we are configure in Dockerfile in newly created container
+	$ hostname -i
+	$ service nginx status
+	$ service ssh status
+
+# Verify if nginx is running from the container.
+	$ http://172.17.0.2:80
+	
+# Build image without existing image	
+	- Use --no-cache option
+	$ docker build --no-cache -t="username_of_dockerhub/image-name" .
+
+# Pulling the images
+	- docker pull <image-name>
+
+# Searching docker images in docker hub
+	- docker search <image-name> (Ex. puppet)
+	- docker search <image-name> (Ex. jenkins)
+
+
+# Docker Image layers
+  =======================
+- Checking the history of our docker image
+	$ docker history <Image-Id>
+
+# Container creation process
+  How contaner is created:
+		
+		Writable Layer		
+		-		
+		abc application		
+		Apache image
+		nginx image
+		-		
+		Ubuntu Base Image(rootfs)
+		-
+		Bootfs:
+		    cgroups, namespace, divicemapper/aufs..etc.
+		Kernel
+
+==========================================================================================================
+
+Real-Time application for single server deployment.
+============================
+Scenario-1
+==========
+
+-Build and deployments with Docker containers.
+
+Step:1. Clone the source code from Git.
+	
+Step:2. Build the code using build tool Maven. 
+
+Step:3. Create docker file for the application with war file, tomcat,n...etc.
+
+	Dockerfile:
+	FROM tomcat:8.0
+	COPY abc.war /usr/local/tomcat/webapps
+	ENTRYPOINT /usr/local/tomcat/bin/startup.sh && bash
+
+Step:4. Build the Image:
+	
+Step:5. Create the container manually using command or use script.
+
+Step:6. Launch the application from containers.
+
+	http://IP:8080/abc
+
+===============================================================================================
+
+
+Real-Time application for multiple server deployment.
+============================
+Scenario-2
+==========
+-Deploy war-file on multiple container using shell script
+===================
+
+Step:1. Clone the source code from Git.
+	
+Step:2. Build the code using build tool Maven.
+	
+Step:3. Create docker file for the application with war file, tomcat,n...etc.
+
+	Dockerfile:
+	FROM tomcat:8.0
+	COPY abc
+
+.war /usr/local/tomcat/webapps
+	ENTRYPOINT /usr/local/tomcat/bin/startup.sh && bash
+
+Step:4. Build the Image:
+	
+Step:5. Write one shell script file for environment(create-env.sh)
+	-
+	-	
+	-
+
+Step:6. Create environment using shell script. Run the command in project directory
+
+Step:7. Inspect IPaddress(get all IP address for attaching to load balancer)
+	
+	
+Step:8. Create one txt file for storing all IPAddress.
+	
+Step:9. Launch the application from containers.
+
+
+============================================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
