@@ -1,0 +1,33 @@
+Step 1). docker run --name container-name -it ubuntu /bin/bash
+
+Step 2). useradd -m -d /home/username /bin/bash username
+
+Step 3). passwd username
+
+Step 4). apt-get update
+
+Step 5). apt-get install openssh-server
+
+Step 6). apt-get install vim
+
+Step 7). service ssh status
+
+Step 9). servive ssh start or stop
+
+Step 10). go to Souce machine and create connection between two server using below command, apply this command on both side
+
+Step 11). ssh container username@container-ip
+
+then transfer required files
+
+Step 12). Enter this below command in Execute shell
+
+sshpass -p "QA-server" scp target/LoginWebApp.war QA-server@172.17.0.3:/home/QA-server/Distros/apache-tomcat-8.5.35/webapps
+
+ 
+for single server means for base machine 
+
+cp target/abc.war username@ip:/path
+
+
+
